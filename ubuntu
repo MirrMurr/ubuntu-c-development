@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+image=ubuntu-build-essentials
+printf "Image name: %s\n" $image
+
+pushd $1
+dstPath=$PWD
+printf "Local working directory: %s\n" $dstPath
+workdir=${PWD##*/}
+popd
+
+docker run \
+    --name $image \
+    -e HOST_IP=$(ifconfig en0 | awk '/ *inet /{print $2}') \
+    -v $dstPath:/$workdir \
+    --workdir=/$workdir \
+    -t -i \
+    --rm \
+    mirrmurr/ubuntu-dev /bin/bash
